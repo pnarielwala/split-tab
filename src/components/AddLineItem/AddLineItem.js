@@ -17,6 +17,7 @@ type LineItemT = {
 type PropsT = {
   participants: Array<ParticipantT>,
   onAdd: LineItemT => void,
+  onCancel: () => void,
 }
 
 type StateT = {
@@ -98,6 +99,12 @@ class AddLineItem extends Component<PropsT, StateT> {
           </div>
           <Button className={styles.button} type="submit" bsStyle="success">
             Add
+          </Button>
+          <Button
+            className={styles.button}
+            onClick={this.props.onCancel}
+            bsStyle="default">
+            Cancel
           </Button>
         </form>
       </div>

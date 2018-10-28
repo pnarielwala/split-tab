@@ -48,8 +48,12 @@ class Tab extends Component<PropsT, StateT> {
 
   handleAddParticipantClick = () => {
     this.props.openModal({
-      content: <AddParticipant onAdd={this.onAddParticipant} />,
-      onRequestCloseEnabled: true,
+      content: (
+        <AddParticipant
+          onAdd={this.onAddParticipant}
+          onCancel={this.props.closeModal}
+        />
+      ),
     })
   }
 
@@ -71,9 +75,9 @@ class Tab extends Component<PropsT, StateT> {
         <AddLineItem
           participants={Object.values(this.state.participants)}
           onAdd={this.onAddLineItem}
+          onCancel={this.props.closeModal}
         />
       ),
-      onRequestCloseEnabled: true,
     })
   }
 

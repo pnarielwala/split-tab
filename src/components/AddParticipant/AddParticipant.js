@@ -10,6 +10,7 @@ type PropsT = {
     amount: number,
     totalAmount: number,
   }) => void,
+  onCancel: () => void,
 }
 
 type StateT = {
@@ -51,6 +52,12 @@ class AddParticipant extends Component<PropsT, StateT> {
           />
           <Button className={styles.button} type="submit" bsStyle="success">
             Add
+          </Button>
+          <Button
+            className={styles.button}
+            onClick={this.props.onCancel}
+            bsStyle="default">
+            Cancel
           </Button>
         </form>
       </div>
