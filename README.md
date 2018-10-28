@@ -1,4 +1,6 @@
 # Split Tab
+Easily split a restaurant tab between your friends!
+<a href="http://split-tab.surge.sh/">Demo</a>
 
 ## Installation
 
