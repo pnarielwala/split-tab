@@ -28,6 +28,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "flow-bin": "^0.84.0"
+    "flow-bin": "^0.84.0",
+    "surge": "^0.20.1"
   }
 }

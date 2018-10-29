@@ -63,7 +63,7 @@ jobs:
     steps:
       - attach_workspace: *attached_workspace
       - run:
-          name: Installing dependencies on server box
+          name: Deploy app to surge
           command: yarn deploy
 
 workflows:
