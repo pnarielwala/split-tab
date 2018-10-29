@@ -100,7 +100,9 @@ class Tab extends Component<PropsT, StateT> {
 
   onTaxInputChange = (event: SyntheticInputEvent<HTMLInputElement>) => {
     const value = event.target.value
-    if (/^\d*[.]?\d{0,2}$/.test(value)) this.setState({ tax: value })
+    const valid = /^\d*[.]?\d{0,2}$/.test(value)
+    const tax = valid ? value : this.state.tax
+    this.setState({ tax })
   }
 
   getTotals = () => {
@@ -145,6 +147,7 @@ class Tab extends Component<PropsT, StateT> {
 
   render() {
     const { participantTotals } = this.getTotals()
+    const isMobile = window.innerWidth < 640
     return (
       <div className={styles.container}>
         <PageHeader>Split Tab App</PageHeader>
@@ -166,11 +169,12 @@ class Tab extends Component<PropsT, StateT> {
         />
         <FormGroup className={styles.taxContainer}>
           <ControlLabel>Total tax</ControlLabel>
-
           <InputGroup>
             <InputGroup.Addon>$</InputGroup.Addon>
             <FormControl
               value={this.state.tax}
+              type={isMobile ? 'number' : 'text'}
+              min={0}
               placeholder="ex. 10.50"
               onChange={this.onTaxInputChange}
             />

@@ -47,6 +47,7 @@ class AddParticipant extends Component<PropsT, StateT> {
         <form className={styles.form} onSubmit={this.handleOnAddClick}>
           <FormControl
             autoFocus
+            placeholder="ex. Bob"
             value={this.state.participant}
             onChange={this.onInputChange}
           />

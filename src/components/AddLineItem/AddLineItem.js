@@ -67,6 +67,7 @@ class AddLineItem extends Component<PropsT, StateT> {
 
   render() {
     const { participants } = this.props
+    const isMobile = window.innerWidth < 640
     return (
       <div className={styles.container}>
         <h2>Add a new line item</h2>
@@ -75,6 +76,9 @@ class AddLineItem extends Component<PropsT, StateT> {
             <InputGroup.Addon>$</InputGroup.Addon>
             <FormControl
               autoFocus
+              type={isMobile ? 'number' : 'text'}
+              min={0}
+              placeholder="ex. 10.99"
               value={this.state.amount}
               onChange={this.onInputChange}
             />
