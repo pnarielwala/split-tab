@@ -174,6 +174,7 @@ class Tab extends Component<PropsT, StateT> {
             <FormControl
               value={this.state.tax}
               type={isMobile ? 'number' : 'text'}
+              step=".01"
               min={0}
               placeholder="ex. 10.50"
               onChange={this.onTaxInputChange}

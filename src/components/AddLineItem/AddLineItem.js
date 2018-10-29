@@ -78,6 +78,7 @@ class AddLineItem extends Component<PropsT, StateT> {
               autoFocus
               type={isMobile ? 'number' : 'text'}
               min={0}
+              step=".01"
               placeholder="ex. 10.99"
               value={this.state.amount}
               onChange={this.onInputChange}
