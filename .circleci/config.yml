@@ -1,0 +1,91 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+defaults: &defaults
+  docker:
+    - image: circleci/node:8.10.0
+  working_directory: /tmp/code
+
+attached_workspace: &attached_workspace
+  at: /tmp
+
+version: 2
+jobs:
+  checkout:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Installing dependencies
+          command: yarn install --non-interactive --frozen-lockfile
+      - persist_to_workspace:
+          root: /tmp
+          paths: code
+  # test:
+  #   <<: *defaults
+  #   steps:
+  #     - attach_workspace: *attached_workspace
+  #     - run:
+  #         name: Running tests
+  #         command: yarn test --runInBand
+  #     - store_artifacts:
+  #         path: /tmp/code/artifacts/coverage/lcov-report
+  #         destination: coverage-report
+  #     - run: yarn codecov
+  flow:
+    <<: *defaults
+    steps:
+      - attach_workspace: *attached_workspace
+      - run:
+          name: Running flowtype check
+          command: yarn flow check
+  build:
+    <<: *defaults
+    steps:
+      - attach_workspace: *attached_workspace
+      - run:
+          name: Building bundle
+          command: yarn build
+          environment:
+            - NODE_ENV: 'development'
+      - store_artifacts:
+          path: /tmp/code/artifacts
+          destination: bundle-report
+      - persist_to_workspace:
+          root: /tmp
+          paths: code
+      - store_artifacts:
+          path: ./artifacts
+
+  deploy:
+    <<: *defaults
+    steps:
+      - attach_workspace: *attached_workspace
+      - run:
+          name: Installing dependencies on server box
+          command: yarn deploy
+
+workflows:
+  version: 2
+  split-app:
+    jobs:
+      - checkout
+      # - test:
+      #     requires:
+      #       - checkout
+      - flow:
+          requires:
+            - checkout
+      - build:
+          requires:
+            - checkout
+      - deploy:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            # - test
+            - flow
+            - build
