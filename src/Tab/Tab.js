@@ -129,7 +129,7 @@ class Tab extends Component<PropsT, StateT> {
     const bill = lineItems.reduce(
       (acc, lineItem) => {
         const numOfParticipants = lineItem.participants.length
-        const amount = lineItem.amount / numOfParticipants
+        const amount = lineItem.amount
         const tipAmount = amount * this.state.tipPercent
         const taxAmount = amount * (tax / billBaseTotal)
         const total = amount + tipAmount + taxAmount
@@ -144,7 +144,7 @@ class Tab extends Component<PropsT, StateT> {
         })
         acc.lineItemTotals.push({
           label: lineItem.label,
-          amount: total * numOfParticipants,
+          amount: total,
         })
         return acc
       },
