@@ -1,6 +1,6 @@
 // @flow
 import React, { Component } from 'react'
-import { FormControl, Button } from 'react-bootstrap'
+import { FormControl, Button, ControlLabel } from 'react-bootstrap'
 import styles from './AddParticipant.module.scss'
 
 type PropsT = {
@@ -45,21 +45,25 @@ class AddParticipant extends Component<PropsT, StateT> {
       <div className={styles.container}>
         <h2>Add a new participant</h2>
         <form className={styles.form} onSubmit={this.handleOnAddClick}>
+          <ControlLabel>Name</ControlLabel>
           <FormControl
             autoFocus
             placeholder="ex. Bob"
             value={this.state.participant}
             onChange={this.onInputChange}
+            required
           />
-          <Button className={styles.button} type="submit" bsStyle="success">
-            Add
-          </Button>
-          <Button
-            className={styles.button}
-            onClick={this.props.onCancel}
-            bsStyle="default">
-            Cancel
-          </Button>
+          <div className={styles.buttonContainer}>
+            <Button className={styles.button} type="submit" bsStyle="success">
+              Add
+            </Button>
+            <Button
+              className={styles.button}
+              onClick={this.props.onCancel}
+              bsStyle="default">
+              Cancel
+            </Button>
+          </div>
         </form>
       </div>
     )

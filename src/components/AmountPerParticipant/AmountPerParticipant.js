@@ -20,15 +20,19 @@ const AmountPerParticipant = (props: PropsT) => {
   const totals = Object.entries(props.totalsPerParticipant)
   return (
     <div className={styles.container}>
-      {totals.map(idAndTotal => {
-        const [participantId, total] = idAndTotal
-        return (
-          <div key={participantId} className={styles.line}>
-            <div>{props.participants[participantId].name}</div>
-            <div>{`$${total.toFixed(2)}`}</div>
-          </div>
-        )
-      })}
+      {totals.length > 0 ? (
+        totals.map(idAndTotal => {
+          const [participantId, total] = idAndTotal
+          return (
+            <div key={participantId} className={styles.line}>
+              <div>{props.participants[participantId].name}</div>
+              <div>{`$${total.toFixed(2)}`}</div>
+            </div>
+          )
+        })
+      ) : (
+        <div>Please add participants</div>
+      )}
     </div>
   )
 }

@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import type { ModalPropsT } from 'components/Modal'
 import AddParticipant from 'components/AddParticipant'
 import AmountPerParticipant from 'components/AmountPerParticipant'
+import AmountPerLineItem from 'components/AmountPerLineItem'
 import AddLineItem from 'components/AddLineItem'
 import TipSelect from 'components/Tip'
 import {
@@ -12,6 +13,9 @@ import {
   FormControl,
   ControlLabel,
   InputGroup,
+  Well,
+  Nav,
+  NavItem,
 } from 'react-bootstrap'
 import styles from './Tab.module.scss'
 
@@ -22,6 +26,7 @@ type ParticipantT = {
 
 type LineItemT = {
   id: string,
+  label: string,
   participants: Array<string>,
   amount: number,
 }
@@ -36,6 +41,7 @@ type StateT = {
   lineItems: { [id: string]: LineItemT },
   tipPercent: number,
   tax: string,
+  selectedTab: string,
 }
 
 class Tab extends Component<PropsT, StateT> {
@@ -44,6 +50,7 @@ class Tab extends Component<PropsT, StateT> {
     lineItems: {},
     tipPercent: 0,
     tax: '',
+    selectedTab: 'participant',
   }
 
   handleAddParticipantClick = () => {
@@ -70,10 +77,12 @@ class Tab extends Component<PropsT, StateT> {
   }
 
   handleAddLineItemClick = () => {
+    const totalLineItems = Object.keys(this.state.lineItems).length
     this.props.openModal({
       content: (
         <AddLineItem
           participants={Object.values(this.state.participants)}
+          totalLineItems={totalLineItems}
           onAdd={this.onAddLineItem}
           onCancel={this.props.closeModal}
         />
@@ -133,11 +142,15 @@ class Tab extends Component<PropsT, StateT> {
           const myTotal = acc.participantTotals[participantId] || 0
           acc.participantTotals[participantId] = myTotal + totalPerParticipant
         })
-
+        acc.lineItemTotals.push({
+          label: lineItem.label,
+          amount: total * numOfParticipants,
+        })
         return acc
       },
       {
         participantTotals: initParticipantTotals,
+        lineItemTotals: [],
         total: 0,
       },
     )
@@ -145,12 +158,16 @@ class Tab extends Component<PropsT, StateT> {
     return bill
   }
 
+  handleTabChange = (eventKey: string) => {
+    this.setState({ selectedTab: eventKey })
+  }
+
   render() {
-    const { participantTotals } = this.getTotals()
+    const { participantTotals, lineItemTotals } = this.getTotals()
     const isMobile = window.innerWidth < 640
     return (
       <div className={styles.container}>
-        <PageHeader>Split Tab App</PageHeader>
+        <PageHeader>Split Tab</PageHeader>
         <Button
           className={styles.button}
           onClick={this.handleAddParticipantClick}>
@@ -159,10 +176,6 @@ class Tab extends Component<PropsT, StateT> {
         <Button className={styles.button} onClick={this.handleAddLineItemClick}>
           Add line item
         </Button>
-        {/* <div>
-          <Button bsStyle="link">View line items</Button>
-          <Button bsStyle="link">View participants</Button>
-        </div> */}
         <TipSelect
           tipPercent={this.state.tipPercent}
           onSelectTip={this.handleSelectTip}
@@ -181,10 +194,28 @@ class Tab extends Component<PropsT, StateT> {
             />
           </InputGroup>
         </FormGroup>
-        <AmountPerParticipant
-          participants={this.state.participants}
-          totalsPerParticipant={participantTotals}
-        />
+        <div className={styles.breakdown}>
+          <ControlLabel>Breakdown by</ControlLabel>
+          <Nav
+            pullLeft
+            bsStyle="tabs"
+            activeKey={this.state.selectedTab}
+            onSelect={this.handleTabChange}>
+            <NavItem eventKey="participant">Participants</NavItem>
+            <NavItem eventKey="line_item">Line items</NavItem>
+          </Nav>
+          <Well className={styles.well}>
+            {this.state.selectedTab === 'participant' && (
+              <AmountPerParticipant
+                participants={this.state.participants}
+                totalsPerParticipant={participantTotals}
+              />
+            )}
+            {this.state.selectedTab === 'line_item' && (
+              <AmountPerLineItem lineItems={lineItemTotals} />
+            )}
+          </Well>
+        </div>
       </div>
     )
   }

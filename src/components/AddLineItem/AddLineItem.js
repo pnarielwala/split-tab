@@ -1,6 +1,6 @@
 // @flow
 import React, { Component } from 'react'
-import { FormControl, Button, InputGroup } from 'react-bootstrap'
+import { FormControl, Button, InputGroup, ControlLabel } from 'react-bootstrap'
 import styles from './AddLineItem.module.scss'
 
 type ParticipantT = {
@@ -12,10 +12,12 @@ type LineItemT = {
   id: string,
   participants: Array<string>,
   amount: number,
+  label: string,
 }
 
 type PropsT = {
   participants: Array<ParticipantT>,
+  totalLineItems: number,
   onAdd: LineItemT => void,
   onCancel: () => void,
 }
@@ -46,6 +48,7 @@ class AddLineItem extends Component<PropsT, StateT> {
 
     this.props.onAdd({
       id: this.createUUID(),
+      label: `Line ${this.props.totalLineItems + 1}`,
       amount: parseFloat(this.state.amount),
       participants: this.state.selectedParticipants,
     })
@@ -72,6 +75,7 @@ class AddLineItem extends Component<PropsT, StateT> {
       <div className={styles.container}>
         <h2>Add a new line item</h2>
         <form className={styles.form} onSubmit={this.handleOnAddClick}>
+          <ControlLabel>Amount</ControlLabel>
           <InputGroup className={styles.input}>
             <InputGroup.Addon>$</InputGroup.Addon>
             <FormControl
@@ -82,35 +86,40 @@ class AddLineItem extends Component<PropsT, StateT> {
               placeholder="ex. 10.99"
               value={this.state.amount}
               onChange={this.onInputChange}
+              required
             />
           </InputGroup>
           <div className={styles.participantsContainer}>
-            <div>Participants: </div>
-            {participants.map((participant, index) => (
-              <Button
-                key={index}
-                value={participant.id}
-                bsStyle={
-                  this.state.selectedParticipants.find(
-                    pId => pId === participant.id,
-                  )
-                    ? 'primary'
-                    : 'default'
-                }
-                onClick={this.onParticipantClick}>
-                {participant.name}
-              </Button>
-            ))}
+            <ControlLabel>Participants</ControlLabel>
+            <div className={styles.participantsButtonContainer}>
+              {participants.map((participant, index) => (
+                <Button
+                  key={index}
+                  value={participant.id}
+                  bsStyle={
+                    this.state.selectedParticipants.find(
+                      pId => pId === participant.id,
+                    )
+                      ? 'primary'
+                      : 'default'
+                  }
+                  onClick={this.onParticipantClick}>
+                  {participant.name}
+                </Button>
+              ))}
+            </div>
           </div>
-          <Button className={styles.button} type="submit" bsStyle="success">
-            Add
-          </Button>
-          <Button
-            className={styles.button}
-            onClick={this.props.onCancel}
-            bsStyle="default">
-            Cancel
-          </Button>
+          <div className={styles.buttonContainer}>
+            <Button className={styles.button} type="submit" bsStyle="success">
+              Add
+            </Button>
+            <Button
+              className={styles.button}
+              onClick={this.props.onCancel}
+              bsStyle="default">
+              Cancel
+            </Button>
+          </div>
         </form>
       </div>
     )

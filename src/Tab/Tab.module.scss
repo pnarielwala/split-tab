@@ -17,4 +17,15 @@
     text-align: left;
     margin-top: 20px;
   }
+
+  .breakdown {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .well {
+      width: 100%;
+      margin-top: 10px;
+    }
+  }
 }
