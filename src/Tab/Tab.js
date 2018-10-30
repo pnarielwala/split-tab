@@ -14,8 +14,8 @@ import {
   ControlLabel,
   InputGroup,
   Well,
-  Nav,
-  NavItem,
+  Tab,
+  Tabs,
 } from 'react-bootstrap'
 import styles from './Tab.module.scss'
 
@@ -44,7 +44,7 @@ type StateT = {
   selectedTab: string,
 }
 
-class Tab extends Component<PropsT, StateT> {
+class Bill extends Component<PropsT, StateT> {
   state = {
     participants: {},
     lineItems: {},
@@ -196,29 +196,28 @@ class Tab extends Component<PropsT, StateT> {
         </FormGroup>
         <div className={styles.breakdown}>
           <ControlLabel>Breakdown by</ControlLabel>
-          <Nav
-            pullLeft
-            bsStyle="tabs"
-            activeKey={this.state.selectedTab}
-            onSelect={this.handleTabChange}>
-            <NavItem eventKey="participant">Participants</NavItem>
-            <NavItem eventKey="line_item">Line items</NavItem>
-          </Nav>
-          <Well className={styles.well}>
-            {this.state.selectedTab === 'participant' && (
-              <AmountPerParticipant
-                participants={this.state.participants}
-                totalsPerParticipant={participantTotals}
-              />
-            )}
-            {this.state.selectedTab === 'line_item' && (
-              <AmountPerLineItem lineItems={lineItemTotals} />
-            )}
-          </Well>
+          <Tabs
+            defaultActiveKey={1}
+            animation={false}
+            id="uncontrolled-tab-example">
+            <Tab eventKey={1} title="Participants">
+              <Well className={styles.well}>
+                <AmountPerParticipant
+                  participants={this.state.participants}
+                  totalsPerParticipant={participantTotals}
+                />
+              </Well>
+            </Tab>
+            <Tab eventKey={2} title="Line items">
+              <Well className={styles.well}>
+                <AmountPerLineItem lineItems={lineItemTotals} />
+              </Well>
+            </Tab>
+          </Tabs>
         </div>
       </div>
     )
   }
 }
 
-export default Tab
+export default Bill

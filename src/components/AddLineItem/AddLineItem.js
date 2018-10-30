@@ -1,6 +1,12 @@
 // @flow
 import React, { Component } from 'react'
-import { FormControl, Button, InputGroup, ControlLabel } from 'react-bootstrap'
+import {
+  FormControl,
+  Button,
+  InputGroup,
+  ControlLabel,
+  Alert,
+} from 'react-bootstrap'
 import styles from './AddLineItem.module.scss'
 
 type ParticipantT = {
@@ -25,17 +31,27 @@ type PropsT = {
 type StateT = {
   selectedParticipants: Array<string>,
   amount: string,
+  description: string,
+  error: string,
 }
 
 class AddLineItem extends Component<PropsT, StateT> {
   state = {
     selectedParticipants: [],
     amount: '',
+    description: '',
+    error: '',
   }
 
-  onInputChange = (event: SyntheticInputEvent<HTMLInputElement>) => {
+  onAmountChange = (event: SyntheticInputEvent<HTMLInputElement>) => {
     const value = event.target.value
-    if (/^\d*[.]?\d{0,2}$/.test(value)) this.setState({ amount: value })
+    if (/^\d*[.]?\d{0,2}$/.test(value))
+      this.setState({ amount: value, error: '' })
+  }
+
+  onDescriptionChange = (event: SyntheticInputEvent<HTMLInputElement>) => {
+    const value = event.target.value
+    this.setState({ description: value })
   }
 
   createUUID = () =>
@@ -45,13 +61,18 @@ class AddLineItem extends Component<PropsT, StateT> {
 
   handleOnAddClick = (event: SyntheticMouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
-
-    this.props.onAdd({
-      id: this.createUUID(),
-      label: `Line ${this.props.totalLineItems + 1}`,
-      amount: parseFloat(this.state.amount),
-      participants: this.state.selectedParticipants,
-    })
+    if (this.state.selectedParticipants.length) {
+      const label =
+        this.state.description || `Line ${this.props.totalLineItems + 1}`
+      this.props.onAdd({
+        id: this.createUUID(),
+        label,
+        amount: parseFloat(this.state.amount),
+        participants: this.state.selectedParticipants,
+      })
+    } else {
+      this.setState({ error: 'Please select a participant' })
+    }
   }
 
   onParticipantClick = (event: SyntheticMouseEvent<HTMLButtonElement>) => {
@@ -65,6 +86,7 @@ class AddLineItem extends Component<PropsT, StateT> {
       : this.state.selectedParticipants.filter(p => p !== value)
     this.setState({
       selectedParticipants,
+      error: '',
     })
   }
 
@@ -75,20 +97,31 @@ class AddLineItem extends Component<PropsT, StateT> {
       <div className={styles.container}>
         <h2>Add a new line item</h2>
         <form className={styles.form} onSubmit={this.handleOnAddClick}>
-          <ControlLabel>Amount</ControlLabel>
-          <InputGroup className={styles.input}>
-            <InputGroup.Addon>$</InputGroup.Addon>
+          <div className={styles.inputContainer}>
+            <ControlLabel>Amount</ControlLabel>
+            <InputGroup className={styles.input}>
+              <InputGroup.Addon>$</InputGroup.Addon>
+              <FormControl
+                autoFocus
+                type={isMobile ? 'number' : 'text'}
+                min={0}
+                step=".01"
+                placeholder="ex. 10.99"
+                value={this.state.amount}
+                onChange={this.onAmountChange}
+                required
+              />
+            </InputGroup>
+          </div>
+          <div className={styles.inputContainer}>
+            <ControlLabel>Description (optional)</ControlLabel>
             <FormControl
-              autoFocus
-              type={isMobile ? 'number' : 'text'}
-              min={0}
-              step=".01"
-              placeholder="ex. 10.99"
-              value={this.state.amount}
-              onChange={this.onInputChange}
-              required
+              className={styles.input}
+              placeholder="ex. Enchiladas Verde"
+              value={this.state.description}
+              onChange={this.onDescriptionChange}
             />
-          </InputGroup>
+          </div>
           <div className={styles.participantsContainer}>
             <ControlLabel>Participants</ControlLabel>
             <div className={styles.participantsButtonContainer}>
@@ -109,16 +142,23 @@ class AddLineItem extends Component<PropsT, StateT> {
               ))}
             </div>
           </div>
-          <div className={styles.buttonContainer}>
-            <Button className={styles.button} type="submit" bsStyle="success">
-              Add
-            </Button>
-            <Button
-              className={styles.button}
-              onClick={this.props.onCancel}
-              bsStyle="default">
-              Cancel
-            </Button>
+          <div className={styles.footer}>
+            {this.state.error && (
+              <Alert bsStyle="danger" className={styles.error}>
+                {this.state.error}
+              </Alert>
+            )}
+            <div className={styles.buttonContainer}>
+              <Button className={styles.button} type="submit" bsStyle="success">
+                Add
+              </Button>
+              <Button
+                className={styles.button}
+                onClick={this.props.onCancel}
+                bsStyle="default">
+                Cancel
+              </Button>
+            </div>
           </div>
         </form>
       </div>

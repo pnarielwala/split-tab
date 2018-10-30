@@ -11,15 +11,20 @@
     align-items: flex-start;
   }
 
+  .inputContainer,
   .input {
     width: 100%;
+  }
+
+  .inputContainer {
+    margin-top: 10px;
   }
 
   .participantsContainer {
     display: flex;
     flex-direction: column;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 10px;
 
     .participantsButtonContainer {
       display: flex;
@@ -30,14 +35,22 @@
     }
   }
 
+  .error {
+    width: 100%;
+  }
+
+  .footer {
+    margin-top: 20px;
+    width: 100%;
+  }
+
   .buttonContainer {
     display: flex;
-    margin-top: 20px;
     width: 100%;
     flex-direction: row-reverse;
 
     .button {
-      margin: 5px;
+      margin-left: 10px;
     }
   }
 }
