@@ -4,6 +4,7 @@ import type { ModalPropsT } from 'components/Modal'
 import AddParticipant from 'components/AddParticipant'
 import AmountPerParticipant from 'components/AmountPerParticipant'
 import AmountPerLineItem from 'components/AmountPerLineItem'
+import AmountPerCategory from 'components/AmountPerCategory'
 import AddLineItem from 'components/AddLineItem'
 import TipSelect from 'components/Tip'
 import {
@@ -133,6 +134,8 @@ class Bill extends Component<PropsT, StateT> {
         const tipAmount = amount * this.state.tipPercent
         const taxAmount = amount * (tax / billBaseTotal)
         const total = amount + tipAmount + taxAmount
+        acc.subtotal += amount
+        acc.tip += tipAmount
         acc.total += total
 
         const totalPerParticipant = total / numOfParticipants
@@ -151,6 +154,9 @@ class Bill extends Component<PropsT, StateT> {
       {
         participantTotals: initParticipantTotals,
         lineItemTotals: [],
+        subtotal: 0,
+        tip: 0,
+        tax,
         total: 0,
       },
     )
@@ -163,7 +169,14 @@ class Bill extends Component<PropsT, StateT> {
   }
 
   render() {
-    const { participantTotals, lineItemTotals } = this.getTotals()
+    const {
+      participantTotals,
+      lineItemTotals,
+      total,
+      tax,
+      tip,
+      subtotal,
+    } = this.getTotals()
     const isMobile = window.innerWidth < 640
     return (
       <div className={styles.container}>
@@ -211,6 +224,16 @@ class Bill extends Component<PropsT, StateT> {
             <Tab eventKey={2} title="Line items">
               <Well className={styles.well}>
                 <AmountPerLineItem lineItems={lineItemTotals} />
+              </Well>
+            </Tab>
+            <Tab eventKey={3} title="Totals">
+              <Well className={styles.well}>
+                <AmountPerCategory
+                  subtotal={subtotal}
+                  tip={tip}
+                  tax={tax}
+                  total={total}
+                />
               </Well>
             </Tab>
           </Tabs>
