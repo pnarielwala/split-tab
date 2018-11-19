@@ -1,5 +1,6 @@
 // @flow
 import React from 'react'
+import { Button, Glyphicon } from 'react-bootstrap'
 import styles from './AmountPerParticipant.module.scss'
 
 type ParticipantT = {
@@ -14,6 +15,7 @@ type PropsT = {
   totalsPerParticipant: {
     [key: string]: number,
   },
+  onEditClick: (id: string) => void,
 }
 
 const AmountPerParticipant = (props: PropsT) => {
@@ -25,7 +27,15 @@ const AmountPerParticipant = (props: PropsT) => {
           const [participantId, total] = idAndTotal
           return (
             <div key={participantId} className={styles.line}>
-              <div>{props.participants[participantId].name}</div>
+              <div>
+                <Button
+                  onClick={() => props.onEditClick(participantId)}
+                  className={styles.edit}
+                  bsSize="small">
+                  <Glyphicon glyph="pencil" />
+                </Button>
+                {props.participants[participantId].name}
+              </div>
               <div>{`$${total.toFixed(2)}`}</div>
             </div>
           )

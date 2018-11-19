@@ -28,6 +28,7 @@
 
     .participantsButtonContainer {
       display: flex;
+      overflow: auto;
 
       button {
         margin: 2px;

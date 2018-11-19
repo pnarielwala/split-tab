@@ -7,7 +7,7 @@ import {
   ControlLabel,
   Alert,
 } from 'react-bootstrap'
-import styles from './AddLineItem.module.scss'
+import styles from './AddEditLineItem.module.scss'
 
 type ParticipantT = {
   id: string,
@@ -22,6 +22,7 @@ type LineItemT = {
 }
 
 type PropsT = {
+  lineItem?: LineItemT,
   participants: Array<ParticipantT>,
   totalLineItems: number,
   onAdd: LineItemT => void,
@@ -29,6 +30,7 @@ type PropsT = {
 }
 
 type StateT = {
+  id: string,
   selectedParticipants: Array<string>,
   amount: string,
   description: string,
@@ -36,11 +38,16 @@ type StateT = {
 }
 
 class AddLineItem extends Component<PropsT, StateT> {
-  state = {
-    selectedParticipants: [],
-    amount: '',
-    description: '',
-    error: '',
+  constructor(props: PropsT) {
+    super(props)
+
+    this.state = {
+      id: props.lineItem ? props.lineItem.id : this.createUUID(),
+      selectedParticipants: props.lineItem ? props.lineItem.participants : [],
+      amount: props.lineItem ? `${props.lineItem.amount}` : '',
+      description: props.lineItem ? props.lineItem.label : '',
+      error: '',
+    }
   }
 
   onAmountChange = (event: SyntheticInputEvent<HTMLInputElement>) => {
@@ -65,7 +72,7 @@ class AddLineItem extends Component<PropsT, StateT> {
       const label =
         this.state.description || `Line ${this.props.totalLineItems + 1}`
       this.props.onAdd({
-        id: this.createUUID(),
+        id: this.state.id,
         label,
         amount: parseFloat(this.state.amount),
         participants: this.state.selectedParticipants,
@@ -91,11 +98,13 @@ class AddLineItem extends Component<PropsT, StateT> {
   }
 
   render() {
-    const { participants } = this.props
+    const { participants, lineItem } = this.props
     const isMobile = window.innerWidth < 640
+    const title = lineItem ? 'Edit line item' : 'Add a new line item'
+    const buttonText = lineItem ? 'Save' : 'Add'
     return (
       <div className={styles.container}>
-        <h2>Add a new line item</h2>
+        <h2>{title}</h2>
         <form className={styles.form} onSubmit={this.handleOnAddClick}>
           <div className={styles.inputContainer}>
             <ControlLabel>Amount</ControlLabel>
@@ -150,7 +159,7 @@ class AddLineItem extends Component<PropsT, StateT> {
             )}
             <div className={styles.buttonContainer}>
               <Button className={styles.button} type="submit" bsStyle="success">
-                Add
+                {buttonText}
               </Button>
               <Button
                 className={styles.button}

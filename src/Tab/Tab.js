@@ -5,7 +5,7 @@ import AddParticipant from 'components/AddParticipant'
 import AmountPerParticipant from 'components/AmountPerParticipant'
 import AmountPerLineItem from 'components/AmountPerLineItem'
 import AmountPerCategory from 'components/AmountPerCategory'
-import AddLineItem from 'components/AddLineItem'
+import AddEditLineItem from 'components/AddEditLineItem'
 import TipSelect from 'components/Tip'
 import {
   Button,
@@ -58,36 +58,35 @@ class Bill extends Component<PropsT, StateT> {
     this.props.openModal({
       content: (
         <AddParticipant
-          onAdd={this.onAddParticipant}
+          onSave={this.onAddParticipant}
           onCancel={this.props.closeModal}
         />
       ),
+      onRequestCloseEnabled: true,
     })
   }
 
   onAddParticipant = (participant: ParticipantT) => {
-    this.setState(
-      {
-        participants: {
-          ...this.state.participants,
-          [participant.id]: participant,
-        },
+    this.setState({
+      participants: {
+        ...this.state.participants,
+        [participant.id]: participant,
       },
-      this.props.closeModal,
-    )
+    })
   }
 
   handleAddLineItemClick = () => {
     const totalLineItems = Object.keys(this.state.lineItems).length
     this.props.openModal({
       content: (
-        <AddLineItem
+        <AddEditLineItem
           participants={Object.values(this.state.participants)}
           totalLineItems={totalLineItems}
           onAdd={this.onAddLineItem}
           onCancel={this.props.closeModal}
         />
       ),
+      onRequestCloseEnabled: true,
     })
   }
 
@@ -100,6 +99,35 @@ class Bill extends Component<PropsT, StateT> {
         this.props.closeModal()
       },
     )
+  }
+
+  handleEditLineItemClick = (id: string) => {
+    const totalLineItems = Object.keys(this.state.lineItems).length
+    this.props.openModal({
+      content: (
+        <AddEditLineItem
+          lineItem={this.state.lineItems[id]}
+          participants={Object.values(this.state.participants)}
+          totalLineItems={totalLineItems}
+          onAdd={this.onAddLineItem}
+          onCancel={this.props.closeModal}
+        />
+      ),
+      onRequestCloseEnabled: true,
+    })
+  }
+
+  handleEditParticipantClick = (id: string) => {
+    this.props.openModal({
+      content: (
+        <AddParticipant
+          participant={this.state.participants[id]}
+          onSave={this.onAddParticipant}
+          onCancel={this.props.closeModal}
+        />
+      ),
+      onRequestCloseEnabled: true,
+    })
   }
 
   handleSelectTip = (tipPercent: number) => {
@@ -146,6 +174,7 @@ class Bill extends Component<PropsT, StateT> {
           acc.participantTotals[participantId] = myTotal + totalPerParticipant
         })
         acc.lineItemTotals.push({
+          id: lineItem.id,
           label: lineItem.label,
           amount: total,
         })
@@ -216,6 +245,7 @@ class Bill extends Component<PropsT, StateT> {
             <Tab eventKey={1} title="Participants">
               <Well className={styles.well}>
                 <AmountPerParticipant
+                  onEditClick={this.handleEditParticipantClick}
                   participants={this.state.participants}
                   totalsPerParticipant={participantTotals}
                 />
@@ -223,7 +253,10 @@ class Bill extends Component<PropsT, StateT> {
             </Tab>
             <Tab eventKey={2} title="Line items">
               <Well className={styles.well}>
-                <AmountPerLineItem lineItems={lineItemTotals} />
+                <AmountPerLineItem
+                  onEditClick={this.handleEditLineItemClick}
+                  lineItems={lineItemTotals}
+                />
               </Well>
             </Tab>
             <Tab eventKey={3} title="Totals">
